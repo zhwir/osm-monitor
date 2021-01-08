@@ -1,0 +1,74 @@
+"use strict"
+
+const CheckStatus = {
+  0: '------',
+  1: true,
+  2: false
+}
+
+let network = 'main';
+let groupId = '';
+
+if (process.argv.length > 3) {
+  network = process.argv[2];
+  groupId = process.argv[3];
+  if ((!['main', 'test'].includes(network)) || (groupId.length != 66)) {
+    console.log("Usage: node start.js <network: 'main' or 'test'> <groupId: hex>");
+    process.exit(1);
+  }
+} else {
+  console.log("Usage: node start.js <network: 'main' or 'test'> <groupId: hex>");
+  process.exit(1);
+}
+
+global.network = network;
+
+const wanchain = require('./src/utils/wanchain');
+
+main();
+
+async function main() {
+  console.log("\r\nStoreman Group Info=====================================================================================");
+  let smgGroup = await wanchain.getSmgGroupInfo(groupId);
+  console.log("%O", smgGroup);
+  let storemen = await wanchain.getSmgSelectedSm(groupId);
+  console.log("=> Storemen");
+  for (let i in storemen) {
+    console.log("node %d: %s", i, storemen[i]);
+  }
+  console.log("\r\nGPK Group Info==========================================================================================");
+  let gpkGroup = await wanchain.getGpkGroupInfo(groupId, -1);
+  console.log("%O", gpkGroup); 
+  
+  for (let curve = 0; curve < 2; curve++) {
+    let curveName = curve? smgGroup.curve2 : smgGroup.curve1;
+    console.log("\r\nGPK Curve %d (%s) Data================================================================================", curve, curveName);
+    let gpkPcs = await wanchain.getPolyCommit(groupId, gpkGroup.round, curve, storemen);
+    console.log("=> Poly Commit");
+    for (let i in gpkPcs) {
+      let pc = gpkPcs[i];
+      let abbr = '';
+      if (pc) {
+        abbr = pc.substr(0, 20) + '...' + pc.substr(-20);
+      }
+      console.log("node %d: %s", i, abbr);
+    }
+    console.log("=> Negotiation");
+    let gpkData = await wanchain.getSijInfo(groupId, gpkGroup.round, curve, storemen);
+    // console.log("%O", gpkData);
+    for (let i in gpkData) {
+      let src = storemen[i];
+      console.log("node %d: %s", i, src);
+      let srcData = gpkData[i];
+      for (let j in srcData) {
+        console.log("  to node %d", j);
+        let sij = srcData[j];
+        let encSijAbbr = sij.encSij.substr(0, 20) + '...' + sij.encSij.substr(-20);
+        console.log("    encSij: %s (checked %s)", encSijAbbr, CheckStatus[sij.checkStatus]);
+        if (sij.checkStatus == 2) {
+          console.log("    sij: %s", sij.sij > 0? sij.sij : '!!!!!!');
+        }
+      }
+    }
+  }
+}
