@@ -61,6 +61,16 @@ async function getSmgSelectedSm(groupId) {
   return storemen;  
 }
 
+async function getSmgSmInfo(wkAddr) {
+  let info = await smgSc.methods.getStoremanInfo(wkAddr).call();
+  return {
+    wkAddr,
+    groupId: info.groupId,
+    nextGroupId: info.nextGroupId,
+    incentivedDay: new Date(info.incentivedDay * 86400 * 1000).toISOString()
+  };
+}
+
 async function getGpkGroupInfo(groupId, round) {
   let info = await gpkSc.methods.getGroupInfo(groupId, round).call();
   return {
@@ -101,6 +111,7 @@ module.exports = {
   getContract,
   getSmgGroupInfo,
   getSmgSelectedSm,
+  getSmgSmInfo,
   getGpkGroupInfo,
   getPolyCommit,
   getSijInfo
