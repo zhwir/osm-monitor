@@ -3,7 +3,7 @@
 const wanchain = require('./utils/wanchain');
 
 const CheckStatus = {
-  0: '------',
+  0: '---',
   1: true,
   2: false
 }
@@ -23,6 +23,7 @@ async function run(groupId) {
   
   for (let curve = 0; curve < 2; curve++) {
     let curveName = curve? smgGroup.curve2 : smgGroup.curve1;
+    let curveStatus = curve? gpkGroup.curve2Status : gpkGroup.curve1Status;
     console.log("\r\nGPK Curve %d (%s) Data================================================================================", curve, curveName);
     let gpkPcs = await wanchain.getPolyCommit(groupId, gpkGroup.round, curve, storemen);
     console.log("=> Poly Commit");
@@ -34,20 +35,22 @@ async function run(groupId) {
       }
       console.log("node %d: %s", i, abbr);
     }
-    console.log("=> Negotiation");
-    let gpkData = await wanchain.getSijInfo(groupId, gpkGroup.round, curve, storemen);
-    // console.log("%O", gpkData);
-    for (let i in gpkData) {
-      let src = storemen[i];
-      console.log("node %d: %s", i, src);
-      let srcData = gpkData[i];
-      for (let j in srcData) {
-        console.log("  to node %d", j);
-        let sij = srcData[j];
-        let encSijAbbr = sij.encSij.substr(0, 20) + '...' + sij.encSij.substr(-20);
-        console.log("    encSij: %s (checked %s)", encSijAbbr, CheckStatus[sij.checkStatus]);
-        if (sij.checkStatus == 2) {
-          console.log("    sij: %s", sij.sij > 0? sij.sij : '!!!!!!');
+    if (curveStatus != 'PolyCommit') {
+      console.log("=> Negotiation");
+      let gpkData = await wanchain.getSijInfo(groupId, gpkGroup.round, curve, storemen);
+      // console.log("%O", gpkData);
+      for (let i in gpkData) {
+        let src = storemen[i];
+        console.log("node %d: %s", i, src);
+        let srcData = gpkData[i];
+        for (let j in srcData) {
+          console.log("  to node %d", j);
+          let sij = srcData[j];
+          let encSijAbbr = sij.encSij? (sij.encSij.substr(0, 20) + '...' + sij.encSij.substr(-20)) : '---';
+          console.log("    encSij: %s (checked %s)", encSijAbbr, CheckStatus[sij.checkStatus]);
+          if (sij.checkStatus == 2) {
+            console.log("    sij: %s", sij.sij > 0? sij.sij : '!!!');
+          }
         }
       }
     }
