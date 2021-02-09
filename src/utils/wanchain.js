@@ -53,7 +53,7 @@ async function getSmgGroupInfo(groupId) {
     curve2: CurveName[info.curve2],
     gpk1: info.gpk1,
     gpk2: info.gpk2,    
-  };  
+  };
 }
 
 async function getSmgSelectedSm(groupId) {
@@ -67,7 +67,8 @@ async function getSmgSmInfo(wkAddr) {
     wkAddr,
     groupId: info.groupId,
     nextGroupId: info.nextGroupId,
-    incentivedDay: new Date(info.incentivedDay * 86400 * 1000).toISOString()
+    incentivedDay: new Date(info.incentivedDay * 86400 * 1000).toISOString(),
+    enodeID: info.enodeID
   };
 }
 
