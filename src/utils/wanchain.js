@@ -73,6 +73,7 @@ async function getSmgSmInfo(wkAddr) {
 }
 
 async function getGpkGroupInfo(groupId, round) {
+  let group = await gpkSc.methods.groupMap(groupId).call();
   let info = await gpkSc.methods.getGroupInfo(groupId, round).call();
   return {
     round: info.queriedRound,
@@ -81,7 +82,11 @@ async function getGpkGroupInfo(groupId, round) {
     curve1StatusTime: new Date(info.curve1StatusTime * 1000).toISOString(),
     // curve2: info.curve2,
     curve2Status: GpkGroupStatus[info.curve2Status],
-    curve2StatusTime: new Date(info.curve2StatusTime * 1000).toISOString()
+    curve2StatusTime: new Date(info.curve2StatusTime * 1000).toISOString(),
+    // timeout
+    ployCommitPeriod: group.ployCommitPeriod,
+    defaultPeriod: group.defaultPeriod,
+    negotiatePeriod: group.negotiatePeriod
   }
 }
 
