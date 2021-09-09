@@ -45,8 +45,13 @@ function getContract(name, address) {
 
 async function getSmgGroupInfo(groupId) {
   let info = await smgSc.methods.getStoremanGroupInfo(groupId).call();
+  let dismissable = "N/A";
+  if (info.status == '6') {
+    dismissable = await smgSc.methods.checkGroupDismissable(groupId).call();
+  }
   return {
     status: SmgGroupStatus[info.status] + '(' + info.status + ')',
+    dismissable,
     startTime: new Date(info.startTime * 1000).toISOString(),
     endTime: new Date(info.endTime * 1000).toISOString(),
     curve1: CurveName[info.curve1],
