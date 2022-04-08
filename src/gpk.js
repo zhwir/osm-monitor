@@ -25,7 +25,7 @@ async function run(groupId) {
     let curveName = curve? smgGroup.curve2 : smgGroup.curve1;
     let curveStatus = curve? gpkGroup.curve2Status : gpkGroup.curve1Status;
     if (curveStatus != 'Complete') {
-      console.log("\r\nGPK Curve %d (%s) Data================================================================================", curve, curveName);
+      console.log("\r\nGPK Curve %d (%s) Data================================================================================", curve + 1, curveName);
       let gpkPcs = await wanchain.getPolyCommit(groupId, gpkGroup.round, curve, storemen);
       console.log("=> Poly Commit");
       for (let i in gpkPcs) {
