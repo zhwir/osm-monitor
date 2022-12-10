@@ -1,4 +1,4 @@
-exports.wanNodeURL = 'http://gwan-testnet.wandevs.org:36891';
+exports.wanNodeURL = 'https://gwan-ssl.wandevs.org:46891';
 
 exports.contractAddress = {
   smg: '0xaa5a0f7f99fa841f410aafd97e8c435c75c22821',
