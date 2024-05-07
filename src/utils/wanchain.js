@@ -52,6 +52,7 @@ async function getSmgGroupInfo(groupId) {
   return {
     status: SmgGroupStatus[info.status] + '(' + info.status + ')',
     dismissable,
+    members: info.memberCountDesign + "/" + info.memberCount,
     startTime: new Date(info.startTime * 1000).toISOString(),
     endTime: new Date(info.endTime * 1000).toISOString(),
     curve1: CurveName[info.curve1],
